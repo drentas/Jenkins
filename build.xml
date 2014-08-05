@@ -6,7 +6,7 @@
   <property name="builddir" value="${workspace}/app/build" />
 
   <target name="build"
-  depends="prepare,parameters,lint,phploc,pdepend,phpcpd,phpcs-ci,phpunit"/>
+  depends="prepare,parameters,vendors,lint,phploc,pdepend,phpcpd,phpcs-ci,phpunit"/>
 
   <target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb"/>
 
@@ -124,6 +124,13 @@
     <exec executable="cp" failonerror="true">
       <arg path="app/config/parameters.yml.dist" />
       <arg path="app/config/parameters.yml" />
+    </exec>
+  </target>
+  
+  <target name="vendors" description="Update vendors">
+    <exec executable="php" failonerror="true">
+        <arg value="composer.phar" />
+        <arg value="install" />
     </exec>
   </target>
 
