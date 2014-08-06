@@ -6,7 +6,7 @@
   <property name="builddir" value="${workspace}/app/build" />
 
   <target name="build"
-  depends="prepare,parameters,vendors,lint,phploc,pdepend,phpcpd,phpcs-ci,phpunit"/>
+  depends="prepare,vendors,parameters,lint,phploc,pdepend,phpcpd,phpmd,phpcs-ci,phpunit"/>
 
   <target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb"/>
 
@@ -71,6 +71,24 @@
     </exec>
   </target>
 
+  <target name="phpmd" description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
+    <exec executable="${basedir}/bin/phpmd">
+      <arg path="${basedir}/src" />
+      <arg value="text" />
+      <arg value="${workspace}/app/phpmd.xml" />
+    </exec>
+  </target>
+
+  <target name="phpmd-ci" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
+    <exec executable="phpmd">
+      <arg path="${sourcedir}" />
+      <arg value="xml" />
+      <arg value="${workspace}/app/phpmd.xml" />
+      <arg value="--reportfile" />
+      <arg value="${builddir}/logs/pmd.xml" />
+    </exec>
+  </target>
+
   <target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
     <exec executable="phpcs">
       <arg value="--standard=Symfony2" />
@@ -119,18 +137,17 @@
     </exec>
   </target>
 
+  <target name="vendors" description="Update vendors">
+    <exec executable="php" failonerror="true">
+        <arg value="composer.phar" />
+        <arg value="install" />
+    </exec>
+  </target>
 
   <target name="parameters" description="Copy parameters">
     <exec executable="cp" failonerror="true">
       <arg path="app/config/parameters.yml.dist" />
       <arg path="app/config/parameters.yml" />
-    </exec>
-  </target>
-  
-  <target name="vendors" description="Update vendors">
-    <exec executable="php" failonerror="true">
-        <arg value="composer.phar" />
-        <arg value="install" />
     </exec>
   </target>
 
